@@ -15,21 +15,22 @@ public class Grid extends PhysicMember{
         blocks = new Block[matrix.length][matrix.length];
         for(int i = 0; i < matrix.length; i++){
             for(int j = 0; j < matrix.length; j++){
-                blocks[i][j] = new Block(50 + (j * Block.BLOCK_WIDHT), 50 + (i * Block.BLOCK_WIDHT ),
+                blocks[i][j] = new Block(i, j, (j * (Block.BLOCK_WIDHT + 1) + 1), 1 + (i * (Block.BLOCK_WIDHT + 1)),
                         Block.BLOCK_WIDHT, Block.BLOCK_WIDHT, matrix[i][j]);//Konum-Konum-Genişlik-Yükseklik-State
             }
         }
+        System.out.println("sa");
     }
     public Block setStartLocation(Block[][] blocks){
         Random rand = new Random();
-        int i = rand.nextInt(20);
-        int j = rand.nextInt(20);
-        if(blocks[i][j].getState() == 0){
-            return blocks[i][j];
+        int i;
+        int j;
+        do{
+            i = rand.nextInt(blocks.length);
+            j = rand.nextInt(blocks.length);
         }
-        else{
-            setStartLocation(blocks);
-        }
+        while (blocks[i][j].state != 0);
+
         return blocks[i][j];
     }
     public void drawtoScreen(Graphics g){

@@ -5,16 +5,29 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class ReadFromNet {
-    static int i = 0;
+
     static int matrixLenght = 0;
     static int[][] matrix;
     public static int[][] readURL(){
-        URL url;
-        try {
-            url = new URL("http://bilgisayar.kocaeli.edu.tr/prolab2/url1.txt");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+        URL url = null;
+
+        String url1 = ("http://bilgisayar.kocaeli.edu.tr/prolab2/url1.txt");
+        String url2 = ("http://bilgisayar.kocaeli.edu.tr/prolab2/url2.txt");
+        if(Main.urlCount %2 == 0){
+            try {
+                url = new URL(url1);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
         }
+        else{
+            try {
+                url = new URL(url2);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         BufferedReader read;
         try {
             read = new BufferedReader(
@@ -23,6 +36,7 @@ public class ReadFromNet {
             throw new RuntimeException(e);
         }
         String line;
+        int i = 0 ;
         while (true)
         {
             try {
@@ -41,12 +55,6 @@ public class ReadFromNet {
                 matrix[i][j] = value;
             }
             i++;
-        }
-        for(int i = 0;i < matrix.length;i++){
-            for(int j = 0;j< matrix[0].length;j++){
-                System.out.print(matrix[i][j]);
-            }
-            System.out.println();
         }
         try {
             read.close();
