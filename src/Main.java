@@ -50,7 +50,6 @@ public class Main extends JPanel implements KeyListener,ActionListener{
         int[][] solutionMatrix = new int[matrix.length][matrix.length];//çözüm matrisi, 0-1 çevirdik
         widht = ((matrix.length) * 36) + 2;
         height = (matrix[0].length * 36) + 2;
-        setPreferredSize(new Dimension(widht,height));//panel boyutu
         addKeyListener(this);
         workingArea = getInsets();
         setSize(widht + workingArea.right + workingArea.left,
