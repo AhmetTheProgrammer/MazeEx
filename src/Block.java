@@ -102,9 +102,6 @@ public class Block extends PhysicMember{
         }*/
         return "sa";
     }
-    public void moveSlide(int hareket){
-        this.block.setLocation(this.block.x + hareket,this.block.y);
-    }
     public void drawtoScreen(Graphics g) {
         if(this.state == 0){
             g.setColor(Color.LIGHT_GRAY);

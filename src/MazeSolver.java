@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 public class MazeSolver {
+    static int total;
     private static class Cell  {
         int x;
         int y;
@@ -80,6 +81,7 @@ public class MazeSolver {
                 engel_sayisi++;
             } while ((p = p.prev) != null);
             System.out.println(path);
+            total = engel_sayisi - 1;
             System.out.println("toplam adım: "+ (engel_sayisi-1));
         }
         for(Point l:lokasyons){

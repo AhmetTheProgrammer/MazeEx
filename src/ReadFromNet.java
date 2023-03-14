@@ -3,31 +3,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReadFromNet {
-
-    static int matrixLenght = 0;
-    static int[][] matrix;
     public static int[][] readURL(){
-        URL url = null;
-
-        String url1 = ("http://bilgisayar.kocaeli.edu.tr/prolab2/url1.txt");
-        String url2 = ("http://bilgisayar.kocaeli.edu.tr/prolab2/url2.txt");
-        if(Main.urlCount %2 == 0){
-            try {
-                url = new URL(url1);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
+        URL url ;
+        try {
+            url = new URL("http://bilgisayar.kocaeli.edu.tr/prolab2/url1.txt");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
-        else{
-            try {
-                url = new URL(url2);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         BufferedReader read;
         try {
             read = new BufferedReader(
@@ -35,27 +21,79 @@ public class ReadFromNet {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String line;
-        int i = 0 ;
-        while (true)
-        {
+        List<String> lines = new ArrayList<>();
+        int row = 0 ;
+        int [][] matrix;
+        char[][] matrixChar;
+        do{
             try {
-                if ((line = read.readLine()) == null) break;
+                lines.add(read.readLine());
+                row++;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            for(int j = 0; j < line.length() ; j++){
-                matrixLenght++;
-            }
-            if(i == 0){
-                matrix = new int[matrixLenght][matrixLenght];
-            }
-            for(int j = 0; j < line.length() ; j++){
-                int value = Integer.parseInt(String.valueOf(line.charAt(j)));
-                matrix[i][j] = value;
-            }
-            i++;
+        }while(!(lines.get(row - 1) == null));
+
+        row--;//do-whiledan kaynaklı
+
+        matrixChar = new char[row][];
+        matrix = new int[row][row];
+        for(int i = 0; i < row; i++){
+            matrixChar[i] = lines.get(i).toCharArray();
         }
+        for(int i = 0; i < row; i++ ){
+            for(int j = 0; j < row; j++){
+                matrix[i][j] = (matrixChar[i][j]) - 48;
+            }
+        }
+        lines.clear();
+        try {
+            read.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return matrix;
+    }
+    public static int[][] readURL2(){
+        URL url ;
+        try {
+            url = new URL("http://bilgisayar.kocaeli.edu.tr/prolab2/url2.txt");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        BufferedReader read;
+        try {
+            read = new BufferedReader(
+                    new InputStreamReader(url.openStream()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        List<String> lines = new ArrayList<>();
+        int row = 0 ;
+        int [][] matrix;
+        char[][] matrixChar;
+        do{
+            try {
+                lines.add(read.readLine());
+                row++;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }while(!(lines.get(row - 1) == null));
+
+        row--;//do-whiledan kaynaklı
+
+        matrixChar = new char[row][];
+        matrix = new int[row][row];
+        for(int i = 0; i < row; i++){
+            matrixChar[i] = lines.get(i).toCharArray();
+        }
+        for(int i = 0; i < row; i++ ){
+            for(int j = 0; j < row; j++){
+                matrix[i][j] = (matrixChar[i][j]) - 48;
+            }
+        }
+        lines.clear();
         try {
             read.close();
         } catch (IOException e) {
