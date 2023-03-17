@@ -1,10 +1,9 @@
 import java.awt.*;
-import java.util.ArrayList;
 
 public class Block extends PhysicMember{
     public int state;
+    public String NG;
     private Point point;
-
     public Point getPoint() {
         return point;
     }
@@ -13,7 +12,7 @@ public class Block extends PhysicMember{
         this.point = point;
     }
 
-    public static final int BLOCK_WIDHT =35;
+    public static final int BLOCK_WIDHT = 30;
     private Rectangle block;
 
     public Block(){
@@ -46,61 +45,39 @@ public class Block extends PhysicMember{
         else{
             if(this.getPoint().getxCor() == toGo.getxCor()){
                 if(this.getPoint().getyCor() > toGo.getyCor()){
-                    //this.block.setLocation(this.block.x -xMove , this.block.y);
-                    this.point.setyCor(this.getPoint().getyCor() - 1);
+                    left();
                     return "sol";
                 }
                 else if(this.getPoint().getyCor() < toGo.getyCor()){
-                    //this.block.setLocation(this.block.x + xMove, this.block.y);
-                    this.point.setyCor(this.getPoint().getyCor() + 1);
+                    right();
                     return "sağ";
                 }
             }
             if(this.getPoint().getyCor() == toGo.getyCor()){
                 if(this.getPoint().getxCor() > toGo.getxCor()){
-                    //this.block.setLocation(this.block.x, this.block.y - xMove);
-                    this.point.setxCor(this.getPoint().getxCor() - 1);
+                    up();
                     return "yukarı";
                 }
                 else if(this.getPoint().getxCor() < toGo.getxCor()){
-                    //this.block.setLocation(this.block.x, this.block.y + xMove);
-                    this.point.setxCor(this.getPoint().getxCor() + 1);
+                    down();
                     return "aşağı";
                 }
             }
         }
-        /*for(int i = 0; i < points.size(); i++){
-            if(this.getPoint().getxCor() == points.get(i).getxCor() && this.getPoint().getyCor() == points.get(i).getyCor()){
-                System.out.println("ilk adım");
-            }
-            else{
-                if(this.getPoint().getxCor() == points.get(i).getxCor()){
-                    if(this.getPoint().getyCor() > points.get(i).getyCor()){
-                        this.block.setLocation(this.block.x -xMove , this.block.y);
-                        this.point.setyCor(this.getPoint().getyCor() - 1);
-                        System.out.println("sola");
-                    }
-                    else if(this.getPoint().getyCor() < points.get(i).getyCor()){
-                        this.block.setLocation(this.block.x + xMove, this.block.y);
-                        this.point.setyCor(this.getPoint().getyCor() + 1);
-                        System.out.println("sağa");
-                    }
-                }
-                if(this.getPoint().getyCor() == points.get(i).getyCor()){
-                    if(this.getPoint().getxCor() > points.get(i).getxCor()){
-                        this.block.setLocation(this.block.x, this.block.y - xMove);
-                        this.point.setxCor(this.getPoint().getxCor() - 1);
-                        System.out.println("yukarı");
-                    }
-                    else if(this.getPoint().getxCor() < points.get(i).getxCor()){
-                        this.block.setLocation(this.block.x, this.block.y + xMove);
-                        this.point.setxCor(this.getPoint().getxCor() + 1);
-                        System.out.println("aşağı");
-                    }
-                }
-            }
-        }*/
         return "sa";
+    }
+    public void left(){
+        this.point.setyCor(this.getPoint().getyCor() - 1);
+    }
+    public void right(){
+        this.point.setyCor(this.getPoint().getyCor() + 1);
+    }
+    public void up(){
+        this.point.setxCor(this.getPoint().getxCor() - 1);
+    }
+    public void down(){
+        this.point.setxCor(this.getPoint().getxCor() + 1);
+
     }
     public void drawtoScreen(Graphics g) {
         if(this.state == 0){

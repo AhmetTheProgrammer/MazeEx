@@ -2,10 +2,6 @@ import java.awt.*;
 
 public abstract class PhysicMember {
 
-
-
-
-
     public PhysicMember(){
 
     }
