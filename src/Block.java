@@ -2,7 +2,7 @@ import java.awt.*;
 
 public class Block extends PhysicMember{
     public int state;
-    public String NG;
+    public String goBack;
     private Point point;
     public Point getPoint() {
         return point;
@@ -25,59 +25,123 @@ public class Block extends PhysicMember{
         this.getPoint().setyCor(yCor);
         block = new Rectangle(x, y , widht, height);
     }
-    public String  move(int xMove, int yMove, Block[][] others, Point toGo){
-        Rectangle temp = new Rectangle(block);
-        temp.setLocation((int)temp.getX() + xMove, (int)temp.getY() + yMove);
-        boolean intersect = false;
 
-        for(int i = 0; i < others.length; i++){
-            for(int j = 0; j < others.length; j ++){
-                if(temp.intersects(others[i][j].getBlock())){
-                    if(others[i][j].state != 0)
-                        intersect = true;
+    public void move(Point toGo,Grid grid, Robot robot,Light light, Main panel){
+        if( (Math.abs(robot.getPoint().getxCor() - toGo.getxCor()) + Math.abs(robot.getPoint().getyCor() - toGo.getyCor())) == 1 ){
+            whereToGo(robot, light, panel , toGo, grid);
+        }
+        else{//geri dön
+            while (!( (Math.abs(robot.getPoint().getxCor() - toGo.getxCor()) + Math.abs(robot.getPoint().getyCor() - toGo.getyCor())) == 1 )){
+                comeBack(robot, grid, light, panel);
+            }
+            whereToGo(robot, light, panel, toGo ,grid);
+        }
+    }
+
+    public void whereToGo(Robot robot, Light light, Main panel, Point toGo, Grid grid){
+        if(robot.getPoint().getxCor() == toGo.getxCor()){//i'ler eşitse
+            if(robot.getPoint().getyCor() > toGo.getyCor()){//sola git
+                if(grid.getBlocks()[toGo.getxCor()][toGo.getyCor()].goBack == null){
+                    grid.getBlocks()[toGo.getxCor()][toGo.getyCor()].goBack = "right";
                 }
+                left(robot, light, panel);
+            }
+            else{//sağa git
+                if(grid.getBlocks()[toGo.getxCor()][toGo.getyCor()].goBack == null){
+                    grid.getBlocks()[toGo.getxCor()][toGo.getyCor()].goBack = "left";
+                }
+                right(robot, light, panel);
             }
         }
-
-        if(this.getPoint().getxCor() == toGo.getxCor() && this.getPoint().getyCor() == toGo.getyCor()){
-            System.out.println("ilk adım");
+        else if(robot.getPoint().getyCor() == toGo.getyCor()){//j'ler eşitse
+            if(robot.getPoint().getxCor() > toGo.getxCor()){//yukarı git
+                if(grid.getBlocks()[toGo.getxCor()][toGo.getyCor()].goBack == null){
+                    grid.getBlocks()[toGo.getxCor()][toGo.getyCor()].goBack = "down";
+                }
+                up(robot, light, panel);
+            }
+            else{//aşağı git
+                if(grid.getBlocks()[toGo.getxCor()][toGo.getyCor()].goBack == null){
+                    grid.getBlocks()[toGo.getxCor()][toGo.getyCor()].goBack = "up";
+                }
+                down(robot, light, panel);
+            }
+        }
+    }
+    public void comeBack(Robot robot, Grid grid,Light light, Main panel){
+        if(grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor()].goBack.equals("right")){
+            right(robot, light, panel);
+        }
+        else if(grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor()].goBack.equals("left")){
+            left(robot, light, panel);
+        }
+        else if(grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor()].goBack.equals("down")){
+            down(robot, light, panel);
+        }
+        else if(grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor()].goBack.equals("up")){
+            up(robot, light, panel);
         }
         else{
-            if(this.getPoint().getxCor() == toGo.getxCor()){
-                if(this.getPoint().getyCor() > toGo.getyCor()){
-                    left();
-                    return "sol";
-                }
-                else if(this.getPoint().getyCor() < toGo.getyCor()){
-                    right();
-                    return "sağ";
-                }
+            System.out.println("NULL AMINA KOYİM");
+        }
+    }
+    public void left(Robot robot, Light light,Main panel){
+        int moveController = 0;
+        robot.getPoint().setyCor(robot.getPoint().getyCor() - 1);
+        while (moveController <= Block.BLOCK_WIDHT){
+            moveController++;
+            robot.getBlock().setLocation((int) (robot.getBlock().getX() - 1), (int) (robot.getBlock().getY()));
+            light.updateLightPos(robot);
+            panel.updateGraphics();
+        }
+    }
+    public void right(Robot robot, Light light,Main panel){
+        int moveController = 0;
+        robot.getPoint().setyCor(robot.getPoint().getyCor() + 1);
+        while (moveController <= Block.BLOCK_WIDHT){
+            moveController++;
+            robot.getBlock().setLocation((int) (robot.getBlock().getX() + 1), (int) (robot.getBlock().getY()));
+            light.updateLightPos(robot);
+            panel.updateGraphics();
+        }
+    }
+    public void up(Robot robot, Light light,Main panel){
+        int moveController = 0;
+        robot.getPoint().setxCor(robot.getPoint().getxCor() - 1);
+        while (moveController <= Block.BLOCK_WIDHT){
+            moveController++;
+            robot.getBlock().setLocation((int) (robot.getBlock().getX()), (int) (robot.getBlock().getY() - 1));
+            light.updateLightPos(robot);
+            panel.updateGraphics();
+        }
+    }
+    public void down(Robot robot, Light light,Main panel){
+        int moveController = 0;
+        robot.getPoint().setxCor(robot.getPoint().getxCor() + 1);
+        while (moveController <= Block.BLOCK_WIDHT){
+            moveController++;
+            robot.getBlock().setLocation((int) (robot.getBlock().getX()), (int) (robot.getBlock().getY() + 1));
+            light.updateLightPos(robot);
+            panel.updateGraphics();
+        }
+    }
+    public void shortMove(Robot robot, Point toGo,Light light, Main panel){
+        if(robot.getPoint().getxCor() == toGo.getxCor()){//i'ler eşitse
+            if(robot.getPoint().getyCor() > toGo.getyCor()){//sola git
+                left(robot, light, panel);
             }
-            if(this.getPoint().getyCor() == toGo.getyCor()){
-                if(this.getPoint().getxCor() > toGo.getxCor()){
-                    up();
-                    return "yukarı";
-                }
-                else if(this.getPoint().getxCor() < toGo.getxCor()){
-                    down();
-                    return "aşağı";
-                }
+            else{//sağa git
+                right(robot, light, panel);
             }
         }
-        return "sa";
-    }
-    public void left(){
-        this.point.setyCor(this.getPoint().getyCor() - 1);
-    }
-    public void right(){
-        this.point.setyCor(this.getPoint().getyCor() + 1);
-    }
-    public void up(){
-        this.point.setxCor(this.getPoint().getxCor() - 1);
-    }
-    public void down(){
-        this.point.setxCor(this.getPoint().getxCor() + 1);
-
+        else if(robot.getPoint().getyCor() == toGo.getyCor()){//j'ler eşitse
+            if(robot.getPoint().getxCor() > toGo.getxCor()){//yukarı git
+                up(robot, light, panel);
+            }
+            else{//aşağı git
+                down(robot, light, panel);
+            }
+        }
     }
     public void drawtoScreen(Graphics g) {
         if(this.state == 0){

@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Stack;
 
@@ -17,7 +16,9 @@ public class Main extends JPanel{
     Grid grid;
     int actionCounter = 0;
     Stack<Point> points;
+    ArrayList<Point> shortPoints;
     Block[][] forControl;
+    Block startingBlock;
     Block finishBlock;
     Robot robot;
     Insets workingArea;
@@ -67,34 +68,30 @@ public class Main extends JPanel{
                     int [] start = {robot.getPoint().getxCor(), robot.getPoint().getyCor()};
                     int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
 
-                    ArrayList<Point> points = MazeSolver.shortestPath(solutionMatrix,start,finish);
-                    Collections.reverse(points);
-                    for(int i = 0; i < points.size();i++){
-                        int tempX = points.get(i).getyCor();
-                        int tempY = points.get(i).getxCor();
-                        points.get(i).setxCor(tempX);
-                        points.get(i).setyCor(tempY);
+                    ArrayList<Point> shortPoint = MazeSolver.shortestPath(solutionMatrix, start, finish);
+                    Collections.reverse(shortPoint);
+                    for(int i = 0; i < shortPoint.size();i++){
+                        int tempX = shortPoint.get(i).getyCor();
+                        int tempY = shortPoint.get(i).getxCor();
+                        shortPoint.get(i).setxCor(tempX);
+                        shortPoint.get(i).setyCor(tempY);
                     }
-
-                    Stack<Point> points1 = new Stack<>();
-
-                    points1.addAll(points);
 
                     BufferedImage image = new BufferedImage(widht, height, BufferedImage.TYPE_INT_RGB);
 
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,finishBlock,points1,image,forControl);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,shortPoint,image,forControl);
                     frame.add(main);
-                    main.loop();
+                    main.loop1();
                     text.setText("Geçilen Kare:"+(MazeSolver.total));
                     text.repaint();
                     main.setVisible(false);
                 }
             }
-        });/*
-        buttonURL2.addActionListener(new ActionListener() {
+        });
+        /*buttonURL2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //Panel değişkenleri set edilecek
@@ -127,7 +124,8 @@ public class Main extends JPanel{
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,finishBlock,points,image,forControl);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl,);
+
                     frame.add(main);
                     main.loop();
                     text.setText("Geçilen Kare:"+(MazeSolver.total));
@@ -146,8 +144,8 @@ public class Main extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 if(e.getActionCommand().equals("RANDOM")){
 
-                    RandomMaze rand = new RandomMaze(7);
-                    int[][] matrix = RandomMaze.randomMatrixGenerator(7,rand);
+                    RandomMaze rand = new RandomMaze(20);
+                    int[][] matrix = RandomMaze.randomMatrixGenerator(20,rand);
                     for(int i = 0; i < matrix.length; i++){
                         for(int j = 0; j < matrix.length; j++){
                             System.out.print(matrix[i][j]+" ");
@@ -158,8 +156,8 @@ public class Main extends JPanel{
                     int height = ((matrix[0].length) * (Block.BLOCK_WIDHT + 1)) + 2;
                     int[][] solutionMatrix = new int[matrix.length][matrix.length];//çözüm matrisi, 0-1 çevirdik
                     solutionMatrix = Functions.generateSolutionMatrix(matrix,solutionMatrix);
-
                     Grid grid = new Grid(matrix);
+
                     Block startingBlock = grid.getBlocks()[1][0];//sol üst
                     Block finishBlock = grid.getBlocks()[matrix.length -2][matrix.length -1];//sağ alt
                     Robot robot = new Robot(startingBlock.getPoint().getxCor(),startingBlock.getPoint().getyCor(),(int) startingBlock.getBlock().getX(),
@@ -168,7 +166,16 @@ public class Main extends JPanel{
                     int [] start = {robot.getPoint().getxCor(), robot.getPoint().getyCor()};
                     int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
 
-                    Stack<Point> points =  rand.getWay(robot.getPoint(),finishBlock.getPoint());
+                    ArrayList<Point> shortPoints =  MazeSolver.shortestPath(solutionMatrix,start,finish);
+                    Collections.reverse(shortPoints);
+                    for(int i = 0; i < shortPoints.size();i++){
+                        int tempX = shortPoints.get(i).getyCor();
+                        int tempY = shortPoints.get(i).getxCor();
+                        shortPoints.get(i).setxCor(tempX);
+                        shortPoints.get(i).setyCor(tempY);
+                    }
+
+                    Stack<Point> points =  rand.getWay(robot.getPoint(), finishBlock.getPoint());
                     Collections.reverse(points);
 
                     for(int i = 0; i < points.size(); i++){
@@ -180,10 +187,10 @@ public class Main extends JPanel{
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,finishBlock,points,image,forControl);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl, shortPoints);
                     frame.add(main);
-                    main.loop();
-                    text.setText("Geçilen Kare:"+(MazeSolver.total));
+                    main.loop2();
+                    text.setText("Geçilen Kare:"+(solutionMatrix.length));
                     text.repaint();
                     try {
                         Thread.sleep(2000);
@@ -196,16 +203,17 @@ public class Main extends JPanel{
             }
         });
     }
-    public Main(int widht, int height,int[][] matrix, int[][] solutionMatrix, Grid grid,Robot robot,Block finishBlock,
-               Stack<Point> points, BufferedImage image,Block[][] forControl){
+    public Main(int widht, int height,int[][] matrix, int[][] solutionMatrix, Grid grid,Robot robot,Block startingBlock, Block finishBlock,
+                ArrayList<Point> shortPoints, BufferedImage image,Block[][] forControl){
         this.widht = widht;
         this.height = height;
         this.matrix = matrix;
         this.solutionMatrix = solutionMatrix;
         this.grid = grid;
         this.robot = robot;
+        this.startingBlock = startingBlock;
         this.finishBlock = finishBlock;
-        this.points = points;
+        this.shortPoints = shortPoints;
         this.workingArea = getInsets();
         this.image = image;
         this.pe = new PhysicsEngine();
@@ -220,89 +228,135 @@ public class Main extends JPanel{
         pe.addMember(finishBlock);
         pe.addMember(robot);
     }
-    private void loop(){
+    public Main(int widht, int height,int[][] matrix, int[][] solutionMatrix, Grid grid,Robot robot,Block startingBlock, Block finishBlock,
+               Stack<Point> points, BufferedImage image,Block[][] forControl, ArrayList<Point> shortPoints){
+        this.widht = widht;
+        this.height = height;
+        this.matrix = matrix;
+        this.solutionMatrix = solutionMatrix;
+        this.grid = grid;
+        this.robot = robot;
+        this.startingBlock = startingBlock;
+        this.finishBlock = finishBlock;
+        this.points = points;
+        this.shortPoints = shortPoints;
+        this.workingArea = getInsets();
+        this.image = image;
+        this.pe = new PhysicsEngine();
+        this.forControl = forControl;
+        grid.getBlocks()[finishBlock.getPoint().getxCor()][finishBlock.getPoint().getyCor()].state = 6;//Bitiş bloğu belli olsun
+        pe.addMember(grid);
+        setSize(widht + workingArea.right + workingArea.left,
+                height + workingArea.bottom + workingArea.top);
+        setVisible(true);
+        light = new Light(this,robot);
+        pe.addMember(light);
+        pe.addMember(finishBlock);
+        pe.addMember(robot);
+    }
+    private void loop2(){
+        int actionCounter = 0;
         long targetTime = 1_000_000_000 / targetFPS;
         boolean konrolcü = true;
         while(konrolcü) {
-            updateGraphics();
             if(actionCounter == 0){
+                updateGraphics();
+                actionCounter++;
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
-            String direction = "sa";
             long startingOfLoop = System.nanoTime();
 
-            actionCounter++;
-            if (actionCounter %1 == 0) {//niye var çözemedim
+            if (actionCounter == 1) {
                 if (points.size() != 0) {
-                    direction = robot.move(Block.BLOCK_WIDHT, Block.BLOCK_WIDHT, forControl, points.get(0));
                     points.remove(0);
+                    robot.move(points.get(0),grid,robot,light,this);
                 }
-                updateGameLogic();
-
-                int moveController = 0;
-                if (direction.equals("sağ")) {
-                    while (moveController <= Block.BLOCK_WIDHT) {
-                        moveController++;
-                        robot.getBlock().setLocation((int) (robot.getBlock().getX() + 1), (int) (robot.getBlock().getY()));
-                        light.updateLightPos(robot);
-                        updateGraphics();
-                    }
-                    paintGrid();
-                }
-                if (direction.equals("sol")) {
-                    while (moveController <= Block.BLOCK_WIDHT) {
-                        moveController++;
-                        robot.getBlock().setLocation((int) (robot.getBlock().getX() - 1), (int) (robot.getBlock().getY()));
-                        light.updateLightPos(robot);
-                        updateGraphics();
-                    }
-                    paintGrid();
-                }
-                if (direction.equals("yukarı")) {
-                    while (moveController <= Block.BLOCK_WIDHT) {
-                        moveController++;
-                        robot.getBlock().setLocation((int) (robot.getBlock().getX()), (int) (robot.getBlock().getY() - 1));
-                        light.updateLightPos(robot);
-                        updateGraphics();
-                    }
-                    paintGrid();
-                }
-                if (direction.equals("aşağı")) {
-                    while (moveController <= Block.BLOCK_WIDHT) {
-                        moveController++;
-                        robot.getBlock().setLocation((int) (robot.getBlock().getX()), (int) (robot.getBlock().getY() + 1));
-                        light.updateLightPos(robot);
-                        updateGraphics();
-                    }
+            }
+            else if(actionCounter == 2){
+                if(shortPoints.size() != 0){
+                    shortPoints.remove(0);
+                    robot.shortMove(robot,shortPoints.get(0),light,this);
                     paintGrid();
                 }
             }
             long remainingTime = targetTime -(System.nanoTime() - startingOfLoop);
-
             try {
                 if(remainingTime > 0)
                     Thread.sleep(remainingTime/1000000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            updateGraphics();
             if(robot.getBlock().getX() == finishBlock.getBlock().getX() && robot.getBlock().getY() == finishBlock.getBlock().getY()){
+                actionCounter++;
+                if(actionCounter > 1){
+                    robot.setPoint(startingBlock.getPoint());
+                    robot.getBlock().setLocation(startingBlock.getBlock().x,startingBlock.getBlock().y);
+                    updateGraphics();
+                }
+                if(actionCounter > 2){
+                    pe.members.remove(robot);
+                    konrolcü = false;
+                }
                 pe.members.remove(light);
                 updateGraphics();
                 try {
-                    Thread.sleep(1500);
+                    Thread.sleep(2000);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
+            }
+        }
+    }
+    private void loop1(){
+        int actionCounter = 0;
+        long targetTime = 1_000_000_000 / targetFPS;
+        boolean konrolcü = true;
+        while(konrolcü) {
+            if(actionCounter == 0){
+                updateGraphics();
+                actionCounter++;
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            long startingOfLoop = System.nanoTime();
+
+            if (actionCounter == 1) {
+                if (shortPoints.size() != 0) {
+                    shortPoints.remove(0);
+                    robot.move(shortPoints.get(0),grid,robot,light,this);
+                    paintGrid();
+                }
+            }
+            long remainingTime = targetTime -(System.nanoTime() - startingOfLoop);
+            try {
+                if(remainingTime > 0)
+                    Thread.sleep(remainingTime/1000000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            updateGraphics();
+            if(robot.getBlock().getX() == finishBlock.getBlock().getX() && robot.getBlock().getY() == finishBlock.getBlock().getY()){
+                pe.members.remove(light);
                 konrolcü = false;
+                updateGraphics();
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
     }
 
-    private void updateGraphics() {
+    public void updateGraphics() {
         Graphics frameGraphic = getGraphics();
         Graphics bufferGraphic = this.image.getGraphics();
 

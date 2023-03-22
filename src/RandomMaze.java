@@ -193,7 +193,7 @@ public class RandomMaze {
         Stack<Point> valid_pos = new Stack<Point>();
 
         Point current = start;
-        visitted_way[1][0] = true;
+        visitted_way[start.getxCor()][start.getyCor()] = true;
         visitted_pos.push(new Point(start.getxCor(), start.getyCor()));
         while (!current.equals(end)) {
             int x = current.getxCor();
