@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class Main extends JPanel{
@@ -27,7 +28,7 @@ public class Main extends JPanel{
     PhysicsEngine pe;
     public static void main(String[] args){
         JFrame frame = new JFrame("Maze");
-        frame.setSize(1440,900);//Frame Boyutu
+        frame.setSize(1920,1080);//Frame Boyutu
         frame.setLayout(null);//Component yerlerini elle vermek için
         //butonlar
         JButton buttonURL1 = new JButton("URL1");
@@ -36,12 +37,12 @@ public class Main extends JPanel{
 
         //kaç kere olduğunu yazdıracağımız textfield
         JTextField text = new JTextField();
-        text.setBounds(800,300,100,25);
+        text.setBounds(1400,400,100,25);
         frame.add(text);
         //butonların yerleri
-        buttonURL1.setBounds(1280,300,100,25);
-        buttonURL2.setBounds(1080,300,100,25);
-        randomButton.setBounds(1080,400,100,25);
+        buttonURL1.setBounds(1400,100,100,25);
+        buttonURL2.setBounds(1400,200,100,25);
+        randomButton.setBounds(1400,300,100,25);
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -54,12 +55,22 @@ public class Main extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 if(e.getActionCommand().equals("URL1")){
                     int[][] matrix = ReadFromNet.readURL();
+                    if(matrix.length <= 10){
+                        Block.BLOCK_WIDHT = 45;
+                    }
+                    else if(matrix.length > 10 && matrix.length <= 20){
+                        Block.BLOCK_WIDHT = 30;
+                    }
+                    else if(matrix.length > 20){
+                        Block.BLOCK_WIDHT = 20;
+                    }
                     int widht = (matrix.length * (Block.BLOCK_WIDHT + 1)) + 2;
                     int height = (matrix[0].length * (Block.BLOCK_WIDHT + 1)) + 2;
-                    int[][] solutionMatrix = new int[matrix.length][matrix.length];//çözüm matrisi, 0-1 çevirdik
-                    solutionMatrix = Functions.generateSolutionMatrix(matrix,solutionMatrix);
-
+                    int[][] solutionMatrix = new int[matrix.length][matrix.length];
                     Grid grid = new Grid(matrix);
+                    solutionMatrix = Functions.generateSolutionMatrix(matrix,solutionMatrix);//çözüm matrisi, 0-1 çevirdik
+
+
                     Block startingBlock = grid.setStartLocation(grid.getBlocks());
                     Block finishBlock = grid.setStartLocation(grid.getBlocks());
                     Robot robot = new Robot(startingBlock.getPoint().getxCor(),startingBlock.getPoint().getyCor(),(int) startingBlock.getBlock().getX(),
@@ -91,22 +102,31 @@ public class Main extends JPanel{
                 }
             }
         });
-        /*buttonURL2.addActionListener(new ActionListener() {
+        buttonURL2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //Panel değişkenleri set edilecek
                 if(e.getActionCommand().equals("URL2")){
                     int[][] matrix = ReadFromNet.readURL2();
-                    int widht = ((matrix.length) * 36) + 2;
-                    int height = (matrix[0].length * 36) + 2;
-                    int[][] solutionMatrix = new int[matrix.length][matrix.length];//çözüm matrisi, 0-1 çevirdik
-                    solutionMatrix = Functions.generateSolutionMatrix(matrix,solutionMatrix);
-
+                    if(matrix.length <= 10){
+                        Block.BLOCK_WIDHT = 45;
+                    }
+                    else if(matrix.length > 10 && matrix.length <= 20){
+                        Block.BLOCK_WIDHT = 30;
+                    }
+                    else if(matrix.length > 20){
+                        Block.BLOCK_WIDHT = 20;
+                    }
+                    int widht = (matrix.length * (Block.BLOCK_WIDHT + 1)) + 2;
+                    int height = (matrix[0].length * (Block.BLOCK_WIDHT + 1)) + 2;
+                    int[][] solutionMatrix = new int[matrix.length][matrix.length];
                     Grid grid = new Grid(matrix);
+                    solutionMatrix = Functions.generateSolutionMatrix(matrix,solutionMatrix);//çözüm matrisi, 0-1 çevirdik
+
                     Block startingBlock = grid.setStartLocation(grid.getBlocks());
                     Block finishBlock = grid.setStartLocation(grid.getBlocks());
                     Robot robot = new Robot(startingBlock.getPoint().getxCor(),startingBlock.getPoint().getyCor(),(int) startingBlock.getBlock().getX(),
-                            (int) startingBlock.getBlock().getY(),35,35,4);;
+                            (int) startingBlock.getBlock().getY(),Block.BLOCK_WIDHT,Block.BLOCK_WIDHT,4);;
 
                     int [] start = {robot.getPoint().getxCor(), robot.getPoint().getyCor()};
                     int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
@@ -124,10 +144,10 @@ public class Main extends JPanel{
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl,);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl);
 
                     frame.add(main);
-                    main.loop();
+                    main.loop1();
                     text.setText("Geçilen Kare:"+(MazeSolver.total));
                     text.repaint();
                     try {
@@ -138,22 +158,33 @@ public class Main extends JPanel{
                     main.setVisible(false);
                 }
             }
-        });*/
+        });
         randomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getActionCommand().equals("RANDOM")){
-
-                    RandomMaze rand = new RandomMaze(20);
-                    int[][] matrix = RandomMaze.randomMatrixGenerator(20,rand);
-                    for(int i = 0; i < matrix.length; i++){
-                        for(int j = 0; j < matrix.length; j++){
-                            System.out.print(matrix[i][j]+" ");
-                        }
-                        System.out.println();
+                    Scanner scan = new Scanner(System.in);
+                    System.out.print("Sayi Girin:");
+                    int size = scan.nextInt();
+                    if(size <= 10){
+                        Block.BLOCK_WIDHT = 45;
                     }
-                    int widht = ((matrix.length) * (Block.BLOCK_WIDHT + 1)) + 2;
-                    int height = ((matrix[0].length) * (Block.BLOCK_WIDHT + 1)) + 2;
+                    else if(size > 10 && size <= 20){
+                        Block.BLOCK_WIDHT = 30;
+                    }
+                    else if(size > 20){
+                        Block.BLOCK_WIDHT = 20;
+                    }
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    RandomMaze rand = new RandomMaze(size);
+                    int[][] matrix = RandomMaze.randomMatrixGenerator(size,rand);
+
+                    int widht = ((matrix[0].length) * (Block.BLOCK_WIDHT + 1)) + 2;
+                    int height = ((matrix.length) * (Block.BLOCK_WIDHT + 1)) + 2;
                     int[][] solutionMatrix = new int[matrix.length][matrix.length];//çözüm matrisi, 0-1 çevirdik
                     solutionMatrix = Functions.generateSolutionMatrix(matrix,solutionMatrix);
                     Grid grid = new Grid(matrix);
@@ -177,10 +208,6 @@ public class Main extends JPanel{
 
                     Stack<Point> points =  rand.getWay(robot.getPoint(), finishBlock.getPoint());
                     Collections.reverse(points);
-
-                    for(int i = 0; i < points.size(); i++){
-                        System.out.println(points.get(i));
-                    }
 
                     BufferedImage image = new BufferedImage(widht, height, BufferedImage.TYPE_INT_RGB);
 
@@ -220,8 +247,7 @@ public class Main extends JPanel{
         this.forControl = forControl;
         grid.getBlocks()[finishBlock.getPoint().getxCor()][finishBlock.getPoint().getyCor()].state = 6;//Bitiş bloğu belli olsun
         pe.addMember(grid);
-        setSize(widht + workingArea.right + workingArea.left,
-                height + workingArea.bottom + workingArea.top);
+        setBounds(0,0,widht,height);
         setVisible(true);
         light = new Light(this,robot);
         pe.addMember(light);
@@ -246,8 +272,7 @@ public class Main extends JPanel{
         this.forControl = forControl;
         grid.getBlocks()[finishBlock.getPoint().getxCor()][finishBlock.getPoint().getyCor()].state = 6;//Bitiş bloğu belli olsun
         pe.addMember(grid);
-        setSize(widht + workingArea.right + workingArea.left,
-                height + workingArea.bottom + workingArea.top);
+        setBounds(0,0,widht,height);
         setVisible(true);
         light = new Light(this,robot);
         pe.addMember(light);
@@ -348,7 +373,7 @@ public class Main extends JPanel{
                 konrolcü = false;
                 updateGraphics();
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }

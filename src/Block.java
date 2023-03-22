@@ -12,7 +12,7 @@ public class Block extends PhysicMember{
         this.point = point;
     }
 
-    public static final int BLOCK_WIDHT = 30;
+    public static int BLOCK_WIDHT = 25;
     private Rectangle block;
 
     public Block(){
@@ -81,9 +81,6 @@ public class Block extends PhysicMember{
         else if(grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor()].goBack.equals("up")){
             up(robot, light, panel);
         }
-        else{
-            System.out.println("NULL AMINA KOYİM");
-        }
     }
     public void left(Robot robot, Light light,Main panel){
         int moveController = 0;
@@ -91,9 +88,10 @@ public class Block extends PhysicMember{
         while (moveController <= Block.BLOCK_WIDHT){
             moveController++;
             robot.getBlock().setLocation((int) (robot.getBlock().getX() - 1), (int) (robot.getBlock().getY()));
-            light.updateLightPos(robot);
+
             panel.updateGraphics();
         }
+        light.updateLightPos(robot);
     }
     public void right(Robot robot, Light light,Main panel){
         int moveController = 0;
@@ -101,9 +99,10 @@ public class Block extends PhysicMember{
         while (moveController <= Block.BLOCK_WIDHT){
             moveController++;
             robot.getBlock().setLocation((int) (robot.getBlock().getX() + 1), (int) (robot.getBlock().getY()));
-            light.updateLightPos(robot);
+
             panel.updateGraphics();
         }
+        light.updateLightPos(robot);
     }
     public void up(Robot robot, Light light,Main panel){
         int moveController = 0;
@@ -111,9 +110,10 @@ public class Block extends PhysicMember{
         while (moveController <= Block.BLOCK_WIDHT){
             moveController++;
             robot.getBlock().setLocation((int) (robot.getBlock().getX()), (int) (robot.getBlock().getY() - 1));
-            light.updateLightPos(robot);
+
             panel.updateGraphics();
         }
+        light.updateLightPos(robot);
     }
     public void down(Robot robot, Light light,Main panel){
         int moveController = 0;
@@ -121,9 +121,10 @@ public class Block extends PhysicMember{
         while (moveController <= Block.BLOCK_WIDHT){
             moveController++;
             robot.getBlock().setLocation((int) (robot.getBlock().getX()), (int) (robot.getBlock().getY() + 1));
-            light.updateLightPos(robot);
+
             panel.updateGraphics();
         }
+        light.updateLightPos(robot);
     }
     public void shortMove(Robot robot, Point toGo,Light light, Main panel){
         if(robot.getPoint().getxCor() == toGo.getxCor()){//i'ler eşitse

@@ -21,14 +21,14 @@ public class MazeSolver {
     }
     //BFS, Time O(n^2), Space O(n^2)
         public static ArrayList<Point> shortestPath(int[][] matrix, int[] start, int[] end) {
-        ArrayList<Point> lokasyons = new ArrayList<>();
-        ArrayList<Point> bos = new ArrayList<>();
+        ArrayList<Point> locations = new ArrayList<>();
+        ArrayList<Point> empty = new ArrayList<>();
         int sx = start[0], sy = start[1];
         int dx = end[0], dy = end[1];
         //if start or end value is 0, return
         if (matrix[sx][sy] == 0 || matrix[dx][dy] == 0) {
             System.out.println("There is no path.");
-            return  bos;
+            return  empty;
         }
         //initialize the cells
         int m = matrix.length;
@@ -43,7 +43,7 @@ public class MazeSolver {
         }
         //breadth first search
         LinkedList<Cell> queue = new LinkedList<>();
-        //ArrayList<Lokasyon> queue=new ArrayList<>();
+
         Cell src = cells[sx][sy];
         src.dist = 0;
         queue.add(src);
@@ -64,30 +64,22 @@ public class MazeSolver {
             //moving right
             visit(cells, queue, p.x, p.y + 1, p);
         }
-        int engel_sayisi=0;
         //compose the path if path exists
         if (dest == null) {
             System.out.println("there is no path.");
-            return lokasyons;
+            return locations;
         } else {
             LinkedList<Cell> path = new LinkedList<>();
 
             p = dest;
             do {
                 path.addFirst(p);
-                lokasyons.add(new Point());
-                lokasyons.get(lokasyons.size()-1).setyCor(path.get(0).x);
-                lokasyons.get(lokasyons.size()-1).setxCor(path.get(0).y);
-                engel_sayisi++;
+                locations.add(new Point());
+                locations.get(locations.size()-1).setyCor(path.get(0).x);
+                locations.get(locations.size()-1).setxCor(path.get(0).y);
             } while ((p = p.prev) != null);
-            System.out.println(path);
-            total = engel_sayisi - 1;
-            System.out.println("toplam adım: "+ (engel_sayisi-1));
         }
-        for(Point l:lokasyons){
-            //System.out.println(l.getxCor()+" "+l.getyCor());
-        }
-        return lokasyons;
+        return locations;
     }
 
     //function to update cell visiting status, Time O(1), Space O(1)

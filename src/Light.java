@@ -3,12 +3,11 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 
 public class Light extends PhysicMember{
-    final int circleSize = 92;
+    final int circleSize = (Block.BLOCK_WIDHT * 3) + 2;
     Area lightArea, screenArea;
     Shape circle;
 
     public Light(Main panel, Robot robot){
-
 
         screenArea = new Area(new Rectangle(0,0, panel.widht, panel.height));
 
