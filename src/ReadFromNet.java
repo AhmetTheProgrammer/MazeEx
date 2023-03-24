@@ -36,15 +36,27 @@ public class ReadFromNet {
 
         row--;//do-whiledan kaynaklı
 
-        matrixChar = new char[row][];
-        matrix = new int[row][row];
-        for(int i = 0; i < row; i++){
-            matrixChar[i] = lines.get(i).toCharArray();
+        matrixChar = new char[row+1][];
+        matrix = new int[row+2][row+2];
+        int k=0;
+        for(int i = 1; i < row+1; i++){
+            matrixChar[i] = lines.get(k).toCharArray();
+            k++;
         }
-        for(int i = 0; i < row; i++ ){
-            for(int j = 0; j < row; j++){
+
+        for(int i = 0; i < row+2; i++ ){
+            matrix[0][i] =1;
+            matrix[row+1][i] =1;
+
+        }
+        for(int i = 1; i < row+1; i++ ){
+            matrix[i][0] =1;
+
+            for(int j = 1; j < row; j++){
                 matrix[i][j] = (matrixChar[i][j]) - 48;
+
             }
+            matrix[i][row+1] =1;
         }
         lines.clear();
         try {
@@ -54,6 +66,7 @@ public class ReadFromNet {
         }
         return matrix;
     }
+
     public static int[][] readURL2(){
         URL url ;
         try {
@@ -83,15 +96,27 @@ public class ReadFromNet {
 
         row--;//do-whiledan kaynaklı
 
-        matrixChar = new char[row][];
-        matrix = new int[row][row];
-        for(int i = 0; i < row; i++){
-            matrixChar[i] = lines.get(i).toCharArray();
+        matrixChar = new char[row+1][];
+        matrix = new int[row+2][row+2];
+        int k=0;
+        for(int i = 1; i < row+1; i++){
+            matrixChar[i] = lines.get(k).toCharArray();
+            k++;
         }
-        for(int i = 0; i < row; i++ ){
-            for(int j = 0; j < row; j++){
+
+        for(int i = 0; i < row+2; i++ ){
+            matrix[0][i] =1;
+            matrix[row+1][i] =1;
+
+        }
+        for(int i = 1; i < row+1; i++ ){
+            matrix[i][0] =1;
+
+            for(int j = 1; j < row; j++){
                 matrix[i][j] = (matrixChar[i][j]) - 48;
+
             }
+            matrix[i][row+1] =1;
         }
         lines.clear();
         try {

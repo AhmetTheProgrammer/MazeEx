@@ -96,7 +96,7 @@ public class Main extends JPanel{
                     Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,shortPoint,image,forControl);
                     frame.add(main);
                     main.loop1();
-                    text.setText("Geçilen Kare:"+(MazeSolver.total));
+                    text.setText("Geçilen Kare:"+(solutionMatrix.length));
                     text.repaint();
                     main.setVisible(false);
                 }
@@ -148,7 +148,7 @@ public class Main extends JPanel{
 
                     frame.add(main);
                     main.loop1();
-                    text.setText("Geçilen Kare:"+(MazeSolver.total));
+                    text.setText("Geçilen Kare:"+(solutionMatrix.length));
                     text.repaint();
                     try {
                         Thread.sleep(1500);
