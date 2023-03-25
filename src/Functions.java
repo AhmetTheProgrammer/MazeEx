@@ -14,7 +14,7 @@ public class Functions {
                     solutionMatrix[i][j] = 0;
                 }
                 else{
-                    solutionMatrix[i][j] = 1;
+                    solutionMatrix[i][j] = 1;//1se yol
                 }
             }
         }

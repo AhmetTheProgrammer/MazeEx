@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class Main extends JPanel{
+    static int waySize;
     static double showTime = 0;
     Light light;
     int widht ;
@@ -90,34 +91,18 @@ public class Main extends JPanel{
                     int height = (matrix[0].length * (Block.BLOCK_WIDHT + 1)) + 2;
                     int[][] solutionMatrix = new int[matrix.length][matrix.length];
                     Grid grid = new Grid(matrix);
-                    solutionMatrix = Functions.generateSolutionMatrix(matrix,solutionMatrix);//çözüm matrisi, 0-1 çevirdik
-
 
                     Block startingBlock = grid.setStartLocation(grid.getBlocks());
                     Block finishBlock = grid.setStartLocation(grid.getBlocks());
                     Robot robot = new Robot(startingBlock.getPoint().getxCor(),startingBlock.getPoint().getyCor(),(int) startingBlock.getBlock().getX(),
                             (int) startingBlock.getBlock().getY(),Block.BLOCK_WIDHT,Block.BLOCK_WIDHT,4);;
 
-                    int [] start = {robot.getPoint().getxCor(), robot.getPoint().getyCor()};
-                    int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
-
-                    ArrayList<Point> shortPoint = MazeSolver.shortestPath(solutionMatrix, start, finish);
-
-                    int waySize = shortPoint.size() - 1;
-                    Collections.reverse(shortPoint);
-                    for(int i = 0; i < shortPoint.size();i++){
-                        int tempX = shortPoint.get(i).getyCor();
-                        int tempY = shortPoint.get(i).getxCor();
-                        shortPoint.get(i).setxCor(tempX);
-                        shortPoint.get(i).setyCor(tempY);
-                    }
-
                     BufferedImage image = new BufferedImage(widht, height, BufferedImage.TYPE_INT_RGB);
 
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,null,image,forControl, shortPoint);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,null,image,forControl, null);
 
                     frame.add(main);
                     main.loop1();
@@ -147,32 +132,20 @@ public class Main extends JPanel{
                     int widht = (matrix.length * (Block.BLOCK_WIDHT + 1)) + 2;
                     int height = (matrix[0].length * (Block.BLOCK_WIDHT + 1)) + 2;
                     int[][] solutionMatrix = new int[matrix.length][matrix.length];
+
                     Grid grid = new Grid(matrix);
-                    solutionMatrix = Functions.generateSolutionMatrix(matrix,solutionMatrix);//çözüm matrisi, 0-1 çevirdik
 
                     Block startingBlock = grid.setStartLocation(grid.getBlocks());
                     Block finishBlock = grid.setStartLocation(grid.getBlocks());
                     Robot robot = new Robot(startingBlock.getPoint().getxCor(),startingBlock.getPoint().getyCor(),(int) startingBlock.getBlock().getX(),
-                            (int) startingBlock.getBlock().getY(),Block.BLOCK_WIDHT,Block.BLOCK_WIDHT,4);;
+                            (int) startingBlock.getBlock().getY(),Block.BLOCK_WIDHT,Block.BLOCK_WIDHT,4);
 
-                    int [] start = {robot.getPoint().getxCor(), robot.getPoint().getyCor()};
-                    int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
-
-                    ArrayList<Point> points =  MazeSolver.shortestPath(solutionMatrix,start,finish);
-                    int waySize = points.size() - 1;
-                    Collections.reverse(points);
-                    for(int i = 0; i < points.size();i++){
-                        int tempX = points.get(i).getyCor();
-                        int tempY = points.get(i).getxCor();
-                        points.get(i).setxCor(tempX);
-                        points.get(i).setyCor(tempY);
-                    }
                     BufferedImage image = new BufferedImage(widht, height, BufferedImage.TYPE_INT_RGB);
 
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,null,image,forControl,points);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,null,image,forControl,null);
 
                     frame.add(main);
                     main.loop1();
@@ -243,7 +216,7 @@ public class Main extends JPanel{
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl, shortPoints);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl,shortPoints);
                     frame.add(main);
                     main.loop2();
                     text.setText(String.valueOf(waySize));
@@ -262,7 +235,7 @@ public class Main extends JPanel{
         });
     }
     public Main(int widht, int height,int[][] matrix, int[][] solutionMatrix, Grid grid,Robot robot,Block startingBlock, Block finishBlock,
-               Stack<Point> points, BufferedImage image,Block[][] forControl, ArrayList<Point> shortPoints){
+               Stack<Point> points, BufferedImage image,Block[][] forControl,ArrayList<Point> shortPoints){
         this.widht = widht;
         this.height = height;
         this.matrix = matrix;
@@ -366,7 +339,7 @@ public class Main extends JPanel{
             }
             long startingOfLoop = System.nanoTime();
             if(actionCounter == 1){
-                robot.blind(robot, grid, light, this);
+                robot.blind(robot, grid, light, this,solutionMatrix);
             }
             if (actionCounter == 2) {
                 if (shortPoints.size() != 0) {
@@ -385,20 +358,43 @@ public class Main extends JPanel{
             updateGraphics();
             if(robot.getBlock().getX() == finishBlock.getBlock().getX() && robot.getBlock().getY() == finishBlock.getBlock().getY()){
                 actionCounter++;
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
                 if(actionCounter == 2){
-                    robot.setPoint(startingBlock.getPoint());
-                    robot.getBlock().setLocation(startingBlock.getBlock().x,startingBlock.getBlock().y);
                     screenFinish = System.nanoTime();
                     showTime = (screenFinish - screenTime) / (double) 1_000_000_000;
+                    int longWay = 0;
+                    for(int i = 0; i < solutionMatrix.length; i++){
+                        for(int j = 0; j < solutionMatrix.length; j ++){
+                            if(solutionMatrix[i][j] == 1){
+                                longWay ++;
+                            }
+                        }
+                    }
+                    System.out.println(longWay);
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    robot.setPoint(startingBlock.getPoint());
+                    robot.getBlock().setLocation(startingBlock.getBlock().x,startingBlock.getBlock().y);
+                    int [] start = {startingBlock.getPoint().getxCor(), startingBlock.getPoint().getyCor()};
+                    int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
+                    solutionMatrix[startingBlock.getPoint().getxCor()][startingBlock.getPoint().getyCor()] = 1;
+                    solutionMatrix[finishBlock.getPoint().getxCor()][finishBlock.getPoint().getyCor()] = 1;
+                    shortPoints = MazeSolver.shortestPath(solutionMatrix, start, finish);
+                    waySize = shortPoints.size() - 1;
+                    Collections.reverse(shortPoints);
+                    for(int i = 0; i < shortPoints.size();i++){
+                        int tempX = shortPoints.get(i).getyCor();
+                        int tempY = shortPoints.get(i).getxCor();
+                        shortPoints.get(i).setxCor(tempX);
+                        shortPoints.get(i).setyCor(tempY);
+                    }
                     updateGraphics();
                 }
                 if(actionCounter > 2){
                     pe.members.remove(robot);
+                    updateGraphics();
                     konrolcü = false;
                 }
                 pe.members.remove(light);
