@@ -3,12 +3,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
 public class Main extends JPanel{
+    static double showTime = 0;
     Light light;
     int widht ;
     int height ;
@@ -37,11 +35,34 @@ public class Main extends JPanel{
 
         //kaç kere olduğunu yazdıracağımız textfield
         JTextField text = new JTextField();
-        text.setBounds(1400,400,100,25);
+        text.setBounds(1450,400,50,25);
         frame.add(text);
+
+        JLabel label = new JLabel();
+        label.setBounds(1270,350,200,25);
+        label.setText("please write maze size (0 - 35 ) : ");
+        frame.add(label);
+
+        JLabel label2 = new JLabel();
+        label2.setBounds(1300,400,150,25);
+        label2.setText("number of blocks visited : ");
+        frame.add(label2);
+
+        JLabel label3 = new JLabel();
+        label3.setBounds(1415,450,100,25);
+        label3.setText("time : ");
+        frame.add(label3);
+
+        JTextField text3 = new JTextField();
+        text3.setBounds(1450,450,50,25);
+        frame.add(text3);
+
+        JTextField text2 = new JTextField();
+        text2.setBounds(1450,350,50,25);
+        frame.add(text2);
         //butonların yerleri
-        buttonURL1.setBounds(1400,100,100,25);
-        buttonURL2.setBounds(1400,200,100,25);
+        buttonURL1.setBounds(1400,200,100,25);
+        buttonURL2.setBounds(1400,250,100,25);
         randomButton.setBounds(1400,300,100,25);
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -50,11 +71,12 @@ public class Main extends JPanel{
         frame.add(buttonURL1);
         frame.add(buttonURL2);
         frame.add(randomButton);
+
         buttonURL1.addActionListener(new ActionListener() {//Butona tıklanınca ne olucak
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getActionCommand().equals("URL1")){
-                    int[][] matrix = ReadFromNet.readURL();
+                    int[][] matrix = ReadFromNet.readURL("http://bilgisayar.kocaeli.edu.tr/prolab2/url1.txt");
                     if(matrix.length <= 10){
                         Block.BLOCK_WIDHT = 45;
                     }
@@ -62,7 +84,7 @@ public class Main extends JPanel{
                         Block.BLOCK_WIDHT = 30;
                     }
                     else if(matrix.length > 20){
-                        Block.BLOCK_WIDHT = 20;
+                        Block.BLOCK_WIDHT = 25;
                     }
                     int widht = (matrix.length * (Block.BLOCK_WIDHT + 1)) + 2;
                     int height = (matrix[0].length * (Block.BLOCK_WIDHT + 1)) + 2;
@@ -80,6 +102,8 @@ public class Main extends JPanel{
                     int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
 
                     ArrayList<Point> shortPoint = MazeSolver.shortestPath(solutionMatrix, start, finish);
+
+                    int waySize = shortPoint.size() - 1;
                     Collections.reverse(shortPoint);
                     for(int i = 0; i < shortPoint.size();i++){
                         int tempX = shortPoint.get(i).getyCor();
@@ -93,11 +117,14 @@ public class Main extends JPanel{
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,shortPoint,image,forControl);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,null,image,forControl, shortPoint);
+
                     frame.add(main);
                     main.loop1();
-                    text.setText("Geçilen Kare:"+(solutionMatrix.length));
+                    text.setText(String.valueOf(waySize));
                     text.repaint();
+                    text3.setText(String.format("%.2f s",showTime));
+                    text3.repaint();
                     main.setVisible(false);
                 }
             }
@@ -107,7 +134,7 @@ public class Main extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 //Panel değişkenleri set edilecek
                 if(e.getActionCommand().equals("URL2")){
-                    int[][] matrix = ReadFromNet.readURL2();
+                    int[][] matrix = ReadFromNet.readURL("http://bilgisayar.kocaeli.edu.tr/prolab2/url2.txt");
                     if(matrix.length <= 10){
                         Block.BLOCK_WIDHT = 45;
                     }
@@ -132,6 +159,7 @@ public class Main extends JPanel{
                     int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
 
                     ArrayList<Point> points =  MazeSolver.shortestPath(solutionMatrix,start,finish);
+                    int waySize = points.size() - 1;
                     Collections.reverse(points);
                     for(int i = 0; i < points.size();i++){
                         int tempX = points.get(i).getyCor();
@@ -144,12 +172,14 @@ public class Main extends JPanel{
                     Block[][] forControl;
                     forControl = grid.getBlocks();
 
-                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl);
+                    Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,null,image,forControl,points);
 
                     frame.add(main);
                     main.loop1();
-                    text.setText("Geçilen Kare:"+(solutionMatrix.length));
+                    text.setText(String.valueOf(waySize));
                     text.repaint();
+                    text3.setText(String.format("%.2f s",showTime));
+                    text3.repaint();
                     try {
                         Thread.sleep(1500);
                     } catch (InterruptedException ex) {
@@ -163,9 +193,7 @@ public class Main extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getActionCommand().equals("RANDOM")){
-                    Scanner scan = new Scanner(System.in);
-                    System.out.print("Sayi Girin:");
-                    int size = scan.nextInt();
+                    int size = Integer.parseInt(text2.getText());
                     if(size <= 10){
                         Block.BLOCK_WIDHT = 45;
                     }
@@ -198,6 +226,7 @@ public class Main extends JPanel{
                     int [] finish = {finishBlock.getPoint().getxCor(), finishBlock.getPoint().getyCor()};
 
                     ArrayList<Point> shortPoints =  MazeSolver.shortestPath(solutionMatrix,start,finish);
+                    int waySize = shortPoints.size() - 1;
                     Collections.reverse(shortPoints);
                     for(int i = 0; i < shortPoints.size();i++){
                         int tempX = shortPoints.get(i).getyCor();
@@ -217,7 +246,9 @@ public class Main extends JPanel{
                     Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl, shortPoints);
                     frame.add(main);
                     main.loop2();
-                    text.setText("Geçilen Kare:"+(solutionMatrix.length));
+                    text.setText(String.valueOf(waySize));
+                    text.repaint();
+                    text3.setText(String.format("%.2f s",showTime));
                     text.repaint();
                     try {
                         Thread.sleep(2000);
@@ -229,30 +260,6 @@ public class Main extends JPanel{
                 }
             }
         });
-    }
-    public Main(int widht, int height,int[][] matrix, int[][] solutionMatrix, Grid grid,Robot robot,Block startingBlock, Block finishBlock,
-                ArrayList<Point> shortPoints, BufferedImage image,Block[][] forControl){
-        this.widht = widht;
-        this.height = height;
-        this.matrix = matrix;
-        this.solutionMatrix = solutionMatrix;
-        this.grid = grid;
-        this.robot = robot;
-        this.startingBlock = startingBlock;
-        this.finishBlock = finishBlock;
-        this.shortPoints = shortPoints;
-        this.workingArea = getInsets();
-        this.image = image;
-        this.pe = new PhysicsEngine();
-        this.forControl = forControl;
-        grid.getBlocks()[finishBlock.getPoint().getxCor()][finishBlock.getPoint().getyCor()].state = 6;//Bitiş bloğu belli olsun
-        pe.addMember(grid);
-        setBounds(0,0,widht,height);
-        setVisible(true);
-        light = new Light(this,robot);
-        pe.addMember(light);
-        pe.addMember(finishBlock);
-        pe.addMember(robot);
     }
     public Main(int widht, int height,int[][] matrix, int[][] solutionMatrix, Grid grid,Robot robot,Block startingBlock, Block finishBlock,
                Stack<Point> points, BufferedImage image,Block[][] forControl, ArrayList<Point> shortPoints){
@@ -279,10 +286,12 @@ public class Main extends JPanel{
         pe.addMember(finishBlock);
         pe.addMember(robot);
     }
-    private void loop2(){
+    private void loop2(){//Random loopu
         int actionCounter = 0;
         long targetTime = 1_000_000_000 / targetFPS;
         boolean konrolcü = true;
+        long screenTime = System.nanoTime();
+        long screenFinish;
         while(konrolcü) {
             if(actionCounter == 0){
                 updateGraphics();
@@ -318,9 +327,11 @@ public class Main extends JPanel{
             updateGraphics();
             if(robot.getBlock().getX() == finishBlock.getBlock().getX() && robot.getBlock().getY() == finishBlock.getBlock().getY()){
                 actionCounter++;
-                if(actionCounter > 1){
+                if(actionCounter == 2){
                     robot.setPoint(startingBlock.getPoint());
                     robot.getBlock().setLocation(startingBlock.getBlock().x,startingBlock.getBlock().y);
+                    screenFinish = System.nanoTime();
+                    showTime = (screenFinish - screenTime) / (double) 1_000_000_000;
                     updateGraphics();
                 }
                 if(actionCounter > 2){
@@ -341,6 +352,8 @@ public class Main extends JPanel{
         int actionCounter = 0;
         long targetTime = 1_000_000_000 / targetFPS;
         boolean konrolcü = true;
+        long screenFinish;
+        long screenTime = System.nanoTime();
         while(konrolcü) {
             if(actionCounter == 0){
                 updateGraphics();
@@ -352,8 +365,10 @@ public class Main extends JPanel{
                 }
             }
             long startingOfLoop = System.nanoTime();
-
-            if (actionCounter == 1) {
+            if(actionCounter == 1){
+                robot.blind(robot, grid, light, this);
+            }
+            if (actionCounter == 2) {
                 if (shortPoints.size() != 0) {
                     shortPoints.remove(0);
                     robot.move(shortPoints.get(0),grid,robot,light,this);
@@ -369,8 +384,24 @@ public class Main extends JPanel{
             }
             updateGraphics();
             if(robot.getBlock().getX() == finishBlock.getBlock().getX() && robot.getBlock().getY() == finishBlock.getBlock().getY()){
+                actionCounter++;
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                if(actionCounter == 2){
+                    robot.setPoint(startingBlock.getPoint());
+                    robot.getBlock().setLocation(startingBlock.getBlock().x,startingBlock.getBlock().y);
+                    screenFinish = System.nanoTime();
+                    showTime = (screenFinish - screenTime) / (double) 1_000_000_000;
+                    updateGraphics();
+                }
+                if(actionCounter > 2){
+                    pe.members.remove(robot);
+                    konrolcü = false;
+                }
                 pe.members.remove(light);
-                konrolcü = false;
                 updateGraphics();
                 try {
                     Thread.sleep(3000);

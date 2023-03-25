@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Random;
 
 public class Block extends PhysicMember{
     public int state;
@@ -35,6 +36,41 @@ public class Block extends PhysicMember{
                 comeBack(robot, grid, light, panel);
             }
             whereToGo(robot, light, panel, toGo ,grid);
+        }
+    }
+    public void blind(Robot robot, Grid grid, Light light, Main main){
+       // Random rand = new Random();
+        //int flag = rand.nextInt(1,5);
+        boolean zart=false;
+        if( zart==false && (grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor() + 1].state == 0 ||
+                grid.getBlocks()[robot.getPoint().getxCor() ][robot.getPoint().getyCor()+1].state == 6)&&
+                grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor() + 1].goBack == null){
+            grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor() + 1].goBack = "left";
+            right(robot,light,main);
+            zart=true;
+        }
+        else if( zart==false && (grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor() - 1].state == 0 ||
+                grid.getBlocks()[robot.getPoint().getxCor() ][robot.getPoint().getyCor()-1].state == 6)&&
+                grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor() - 1].goBack == null){
+            grid.getBlocks()[robot.getPoint().getxCor()][robot.getPoint().getyCor() - 1].goBack = "right";
+            left(robot, light, main);
+            zart=true;
+        }
+        else if( zart==false && (grid.getBlocks()[robot.getPoint().getxCor() - 1][robot.getPoint().getyCor()].state == 0 ||
+                grid.getBlocks()[robot.getPoint().getxCor() - 1][robot.getPoint().getyCor()].state == 6) &&
+                grid.getBlocks()[robot.getPoint().getxCor() - 1][robot.getPoint().getyCor()].goBack == null){
+            grid.getBlocks()[robot.getPoint().getxCor() - 1][robot.getPoint().getyCor()].goBack = "down";
+            up(robot, light, main);
+            zart=true;
+        }
+        else if( zart==false && (grid.getBlocks()[robot.getPoint().getxCor() + 1][robot.getPoint().getyCor()].state == 0 ||
+                grid.getBlocks()[robot.getPoint().getxCor() + 1][robot.getPoint().getyCor()].state == 6) &&
+                grid.getBlocks()[robot.getPoint().getxCor() + 1][robot.getPoint().getyCor()].goBack == null){
+            grid.getBlocks()[robot.getPoint().getxCor() + 1][robot.getPoint().getyCor()].goBack = "up";
+            down(robot, light, main);
+        }
+        else{
+            comeBack(robot, grid, light, main);
         }
     }
 

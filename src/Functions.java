@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Functions {
     public static int[][] generateSolutionMatrix(int [][]matrix,int[][]solutionMatrix){
         for(int i = 0; i < matrix.length ; i ++){

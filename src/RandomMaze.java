@@ -144,42 +144,6 @@ public class RandomMaze {
             current.setyCor(next.getyCor());
         }
     }
-
-    public void printVisitted() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (visitted[i][j] == true) {
-                    System.out.print(1 + " ");
-                } else {
-                    System.out.print(0 + " ");
-                }
-            }
-            System.out.println();
-        }
-    }
-
-    public void print() {
-        for (int i = 0; i < size + 2; i++) {
-            for (int j = 0; j < size + 2; j++) {
-                System.out.print(array[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    private boolean canMove(Point current, Point next) {
-        ArrayList<Point> nexts = new ArrayList<Point>();
-        if (canMoveUp(current))
-            nexts.add(new Point(current.getxCor() - 1, current.getyCor()));
-        if (canMoveRight(current))
-            nexts.add(new Point(current.getxCor(), current.getyCor() + 1));
-        if (canMoveDown(current))
-            nexts.add(new Point(current.getxCor() + 1, current.getyCor()));
-        if (canMoveLeft(current))
-            nexts.add(new Point(current.getxCor(), current.getyCor() - 1));
-        return nexts.contains(next);
-    }
-
     private void resetVisittedWay() {
         for (int i = 0; i < size + 2; i++) {
             for (int j = 0; j < size + 2; j++) {
@@ -221,70 +185,10 @@ public class RandomMaze {
         resetVisittedWay();
         return way;
     }
-
-    public Stack<Point> getDirectWay(Point start, Point end) {
-        Stack<Point> visitted_pos = getWay(start, end);
-        Stack<Point> revrse_way = new Stack<Point>();
-        while (!visitted_pos.empty()) {
-            revrse_way.push(visitted_pos.pop());
-        }
-        visitted_pos.push(new Point(end.getxCor(), end.getyCor()));
-        revrse_way.pop();
-        Point current = end;
-        while (!revrse_way.empty()) {
-            current = revrse_way.pop();
-            Point next = visitted_pos.peek();
-
-            if (canMove(current, next)) {
-                visitted_pos.push(new Point(current.getxCor(), current.getyCor()));
-            }
-        }
-        return visitted_pos;
-    }
-    public void compareWays(Point start, Point end){
-        Stack<Point> directWay = getDirectWay(start, end);
-        Stack<Point> way = getWay(start, end);
-
-        for(int i = 0; i < way.size(); i++){
-            for(int j = 0; j < directWay.size(); j++) {
-
-            }
-        }
-
-    }
     public static int[][] randomMatrixGenerator(int size,RandomMaze maze){
         int[][] arrayDene;
         arrayDene = maze.getArray();
-        for(int i = 0; i < arrayDene.length; i++){
-            for(int j  = 0; j < arrayDene.length; j++){
-                //System.out.print(arrayDene[i][j]+" ");
-            }
-            //System.out.println();
-        }
         return arrayDene;
-    }
-
-    public static void main(String[] args) {
-        int size = 10;
-        Point start = new Point(1, 0);
-        Point end = new Point(size, size + 1);
-//		int pre_time = (int) System.currentTimeMillis();
-
-        RandomMaze maze = new RandomMaze(size);
-
-//		Stack<Point> way = maze.getDirectWay(start, end);
-//		System.out.println(way);
-//		int after_time = (int) System.currentTimeMillis();
-
-//		System.out.println(maze.steps + ": Steps");
-//		System.out.println(1.0 * (after_time - pre_time) / 1000 + "s");
-
-        //maze.print();
-
-
-        System.out.println("-----------------");
-        //maze.printVisitted();
-
     }
 }
 

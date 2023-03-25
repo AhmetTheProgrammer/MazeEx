@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
+
 public class MazeSolver {
     static int total;
-    private static class Cell  {
+    public static class Cell{
         int x;
         int y;
         int dist;  	//distance

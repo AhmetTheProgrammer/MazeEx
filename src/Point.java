@@ -33,11 +33,4 @@ public class Point {
     public String toString() {
         return "Postion(" + xCor + ", " + yCor + ")";
     }
-
-    public static void main(String[] args) {
-        Point current = new Point(0, 1);
-        Point next = new Point(0, 1);
-
-        System.out.println(current.equals(next));
-    }
 }
