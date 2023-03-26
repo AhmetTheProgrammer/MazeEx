@@ -3,7 +3,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
+import java.util.Stack;
 
 public class Main extends JPanel{
     static int waySize;
@@ -35,7 +38,7 @@ public class Main extends JPanel{
         JButton randomButton = new JButton("RANDOM");
 
         //kaç kere olduğunu yazdıracağımız textfield
-        JTextField text = new JTextField();
+        JTextField text = new JTextField();//uzun yol block sayısı
         text.setBounds(1450,400,50,25);
         frame.add(text);
 
@@ -49,16 +52,25 @@ public class Main extends JPanel{
         label2.setText("number of blocks visited : ");
         frame.add(label2);
 
+        JLabel label4 = new JLabel();
+        label4.setBounds(1230,450,250,25);
+        label4.setText("number of blocks of the shortest path : ");
+        frame.add(label4);
+
         JLabel label3 = new JLabel();
-        label3.setBounds(1415,450,100,25);
+        label3.setBounds(1415,500,100,25);
         label3.setText("time : ");
         frame.add(label3);
 
-        JTextField text3 = new JTextField();
-        text3.setBounds(1450,450,50,25);
+        JTextField text4 = new JTextField();//kısa yol block sayısı
+        text4.setBounds(1450,450,50,25);
+        frame.add(text4);
+
+        JTextField text3 = new JTextField();//süre
+        text3.setBounds(1450,500,50,25);
         frame.add(text3);
 
-        JTextField text2 = new JTextField();
+        JTextField text2 = new JTextField();//size
         text2.setBounds(1450,350,50,25);
         frame.add(text2);
         //butonların yerleri
@@ -106,7 +118,17 @@ public class Main extends JPanel{
 
                     frame.add(main);
                     main.loop1();
-                    text.setText(String.valueOf(waySize));
+                    text4.setText(String.valueOf(waySize));
+                    text4.repaint();
+                    int longWay = 0;
+                    for(int i = 0; i < solutionMatrix.length; i++){
+                        for(int j = 0; j < solutionMatrix.length; j ++){
+                            if(solutionMatrix[i][j] == 1){
+                                longWay ++;
+                            }
+                        }
+                    }
+                    text.setText(String.valueOf(longWay));
                     text.repaint();
                     text3.setText(String.format("%.2f s",showTime));
                     text3.repaint();
@@ -149,7 +171,17 @@ public class Main extends JPanel{
 
                     frame.add(main);
                     main.loop1();
-                    text.setText(String.valueOf(waySize));
+                    text4.setText(String.valueOf(waySize));
+                    text4.repaint();
+                    int longWay = 0;
+                    for(int i = 0; i < solutionMatrix.length; i++){
+                        for(int j = 0; j < solutionMatrix.length; j ++){
+                            if(solutionMatrix[i][j] == 1){
+                                longWay ++;
+                            }
+                        }
+                    }
+                    text.setText(String.valueOf(longWay));
                     text.repaint();
                     text3.setText(String.format("%.2f s",showTime));
                     text3.repaint();
@@ -209,6 +241,9 @@ public class Main extends JPanel{
                     }
 
                     Stack<Point> points =  rand.getWay(robot.getPoint(), finishBlock.getPoint());
+
+                    text.setText(String.valueOf(points.size()));
+                    text.repaint();
                     Collections.reverse(points);
 
                     BufferedImage image = new BufferedImage(widht, height, BufferedImage.TYPE_INT_RGB);
@@ -219,10 +254,13 @@ public class Main extends JPanel{
                     Main main = new Main(widht,height,matrix,solutionMatrix,grid,robot,startingBlock,finishBlock,points,image,forControl,shortPoints);
                     frame.add(main);
                     main.loop2();
-                    text.setText(String.valueOf(waySize));
-                    text.repaint();
+                    text4.setText(String.valueOf(waySize));
+                    text4.repaint();
+
+
+
                     text3.setText(String.format("%.2f s",showTime));
-                    text.repaint();
+                    text3.repaint();
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException ex) {
@@ -235,7 +273,7 @@ public class Main extends JPanel{
         });
     }
     public Main(int widht, int height,int[][] matrix, int[][] solutionMatrix, Grid grid,Robot robot,Block startingBlock, Block finishBlock,
-               Stack<Point> points, BufferedImage image,Block[][] forControl,ArrayList<Point> shortPoints){
+                Stack<Point> points, BufferedImage image,Block[][] forControl,ArrayList<Point> shortPoints){
         this.widht = widht;
         this.height = height;
         this.matrix = matrix;
@@ -310,8 +348,9 @@ public class Main extends JPanel{
                 if(actionCounter > 2){
                     pe.members.remove(robot);
                     konrolcü = false;
+                    pe.members.remove(light);
                 }
-                pe.members.remove(light);
+
                 updateGraphics();
                 try {
                     Thread.sleep(2000);
@@ -369,7 +408,8 @@ public class Main extends JPanel{
                             }
                         }
                     }
-                    System.out.println(longWay);
+                    forText(longWay);
+
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -396,8 +436,9 @@ public class Main extends JPanel{
                     pe.members.remove(robot);
                     updateGraphics();
                     konrolcü = false;
+                    pe.members.remove(light);
                 }
-                pe.members.remove(light);
+
                 updateGraphics();
                 try {
                     Thread.sleep(3000);
@@ -407,7 +448,9 @@ public class Main extends JPanel{
             }
         }
     }
-
+    public static int forText(int longway) {
+        return longway;
+    }
     public void updateGraphics() {
         Graphics frameGraphic = getGraphics();
         Graphics bufferGraphic = this.image.getGraphics();
